@@ -98,14 +98,15 @@ export function InventoryTable() {
   table.className = 'table';
   table.innerHTML = `<thead>
     <tr>
-      <th>Produto</th><th>TAG</th><th>Descrição</th><th>Qtd</th><th>Local</th><th>Tags</th><th>Ações</th>
+      <th>Produto</th><th>Descrição</th><th>Qtd</th><th>Local</th><th>Tags</th><th>Ações</th>
     </tr>
   </thead><tbody></tbody>`;
- // envolve a tabela num container que terá scroll próprio
-const tableWrap = document.createElement('div');
-tableWrap.className = 'table-wrap';
-tableWrap.appendChild(table);
-wrap.appendChild(tableWrap);
+
+  // envolve a tabela num container que terá scroll próprio
+  const tableWrap = document.createElement('div');
+  tableWrap.className = 'table-wrap';
+  tableWrap.appendChild(table);
+  wrap.appendChild(tableWrap);
 
   // helpers TAGs
   const currentTags = () =>
@@ -125,23 +126,22 @@ wrap.appendChild(tableWrap);
   // render principal
   async function render(q = '', tagsArr = []) {
     const tbody = table.querySelector('tbody');
-    // AGORA SÃO 7 COLUNAS
-    tbody.innerHTML = '<tr><td colspan="7">Carregando...</td></tr>';
+    // AGORA SÃO 6 COLUNAS
+    tbody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
     try {
       const items = await listInventory({ q, tags: tagsArr }); // OR via overlaps
       tbody.innerHTML = '';
       if (!items.length) {
-        tbody.innerHTML = '<tr><td colspan="7">Sem itens</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6">Sem itens</td></tr>';
         return;
       }
 
       for (const it of items) {
         const primaryTag = (it.tags && it.tags[0]) ? it.tags[0] : '';
-        // FALTAVA CRIAR A TR
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${it.name}</td>
-          <td>${primaryTag}</td>
           <td>${it.description ?? ''}</td>
           <td>${it.quantity}</td>
           <td>${it.location ?? ''}</td>
