@@ -106,6 +106,8 @@ body {
   line-height: 1.7;
   overflow-x: hidden;
   position: relative;
+  display: flex;
+  flex-direction: column;
   
   /* Otimizações premium */
   -webkit-font-smoothing: antialiased;
@@ -130,6 +132,10 @@ body::before {
   animation: particleFloat 30s ease-in-out infinite;
   pointer-events: none;
   z-index: -1;
+}
+
+#app {
+  flex: 1;
 }
 
 /* ===== ANIMAÇÕES AVANÇADAS ===== */
@@ -756,6 +762,62 @@ input:focus::placeholder, textarea:focus::placeholder {
   backdrop-filter: blur(20px);
 }
 
+/* ===== RODAPÉ COM MARCA ===== */
+.footer {
+  text-align: center;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--color-bg-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  flex-shrink: 0;
+}
+
+/* Efeito de brilho sutil no rodapé */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary),
+    transparent
+  );
+  opacity: 0.5;
+}
+
+/* Efeito de partículas no hover */
+.footer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(79, 124, 255, 0.05) 0%,
+    transparent 70%
+  );
+  transform: scale(0);
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.footer:hover::after {
+  transform: scale(1);
+}
+
 /* ===== RESPONSIVIDADE AVANÇADA ===== */
 @media (max-width: 768px) {
   .container {
@@ -815,6 +877,11 @@ input:focus::placeholder, textarea:focus::placeholder {
     .card:hover {
       transform: translateY(-0.25rem);
     }
+  }
+  
+  .footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 0.813rem;
   }
 }
 
@@ -887,7 +954,7 @@ input:focus::placeholder, textarea:focus::placeholder {
 .p-5 { padding: var(--spacing-xl); }
 
 /* ===== OTIMIZAÇÕES DE PERFORMANCE AVANÇADAS ===== */
-.card, button, .toast, .table, .header {
+.card, button, .toast, .table, .header, .footer {
   will-change: transform, opacity;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -896,21 +963,21 @@ input:focus::placeholder, textarea:focus::placeholder {
 
 /* Garantir performance em animações */
 @media (prefers-reduced-motion: no-preference) {
-  .card, button, .toast {
+  .card, button, .toast, .footer {
     transform: translate3d(0, 0, 0);
   }
 }
 
 /* Suporte para browsers modernos */
 @supports (backdrop-filter: blur(20px)) {
-  .card, .toast, .header {
+  .card, .toast, .header, .footer {
     background: var(--color-bg-glass);
   }
 }
 
 /* Fallback para browsers antigos */
 @supports not (backdrop-filter: blur(20px)) {
-  .card, .toast, .header {
+  .card, .toast, .header, .footer {
     background: var(--color-bg-tertiary);
   }
 }
