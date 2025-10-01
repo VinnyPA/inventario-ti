@@ -613,7 +613,7 @@ input:focus::placeholder, textarea:focus::placeholder {
 }
 
 .table tbody tr:hover {
-  transform: translateX(0.5rem);
+  transform: none; 
 }
 
 .table tbody tr:hover td {
@@ -980,4 +980,20 @@ input:focus::placeholder, textarea:focus::placeholder {
   .card, .toast, .header, .footer {
     background: var(--color-bg-tertiary);
   }
+}
+/* 1) Desliga o pseudo-elemento */
+.table tbody tr::before { content: none; }
+
+/* 2) Garante que as linhas não mudam layout */
+.table tr,
+.table thead tr,
+.table tbody tr { display: table-row; }
+
+/* 3) Mantém highlight sem parecer coluna */
+.table tbody tr:hover {
+  background: rgba(79,124,255,.06);   /* leve highlight */
+  /* nada de transform nem pseudo-elemento */
+}
+.table tbody tr:hover {
+  box-shadow: inset 0 0 0 9999px rgba(79,124,255,.06);
 }
