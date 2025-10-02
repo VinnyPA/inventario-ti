@@ -27,4 +27,9 @@ export const TAGS = [
   'ROTEADOR',
   'CABO DE REDE',
   'OUTROS',
+  'TABLET',
+  'CELULAR',
+  'SMARTPHONE',
+  'CAIXA DE SOM',
+  'PC',
 ];
