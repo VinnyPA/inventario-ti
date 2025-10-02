@@ -2,11 +2,7 @@
 import { listInventory, updateItem, deleteItem, registerMovement } from '../../services/inventory.js';
 import { notify } from './Notification.js';
 import { debounce } from '../../lib/debounce.js';
-
-const TAGS_FIXAS = [
-  'MONITOR','MOUSE','CABO DE FONTE MACHO','CABO DE FONTE FEMEA','SUPORTES',
-  'FONE','TECLADO','VGA','HDMI','COOLERS','PASTA TERMICA','MEMORIAS',
-];
+import { TAGS } from '../../lib/tags.js';
 
 export function InventoryTable() {
   const wrap = document.createElement('div');
@@ -61,7 +57,7 @@ export function InventoryTable() {
   list.style.gridTemplateColumns = '1fr';
   list.style.rowGap = '6px';
 
-  TAGS_FIXAS.forEach((tg) => {
+  TAGS.forEach((tg) => {
     const id = `tag-${tg.replace(/\s+/g, '-').toLowerCase()}`;
     const li = document.createElement('li');
     const label = document.createElement('label');
