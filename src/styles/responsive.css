@@ -1,0 +1,67 @@
+/* responsive.css - versão segura: aplica apenas em telas menores */
+/* NÃO redefinir :root ou variáveis globais aqui */
+
+/* ===== tablet layout adjustments (<= 1023px) ===== */
+@media (max-width: 1023px) {
+  /* grid: empilha em tablet se necessário */
+  .app-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 12px 0;
+  }
+
+  /* sidebar vira bloco colapsável (não sticky) */
+  .sidebar {
+    display: block; /* se quiser esconder no tablet, use display:none */
+    position: static;
+    height: auto;
+    overflow: visible;
+    padding: 10px;
+  }
+
+  /* header menor */
+  .brand h1 { font-size: 1rem; }
+  .hamburger { display: inline-flex; } /* mostra hamburger no tablet/mobile */
+}
+
+/* ===== mobile adjustments (<= 639px) ===== */
+@media (max-width: 639px) {
+  /* esconder a tabela grande e mostrar cards */
+  .table-responsive { display: none !important; } /* força esconder em mobile */
+  .item-cards { display: grid !important; grid-template-columns: 1fr; gap: 12px; }
+
+  .item-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 10px;
+    /* Não alterar cores globais aqui — apenas leve sombra */
+    box-shadow: 0 6px 14px rgba(2,6,23,0.45);
+  }
+  .item-card .thumb { width:56px; height:56px; object-fit:cover; border-radius:8px; flex-shrink:0; }
+  .item-card .body { flex:1; }
+
+  /* esconder colunas menos importantes (apenas mobile) */
+  .col-location, .col-last-update, .col-sku { display: none !important; }
+
+  /* botões maiores para toque */
+  .btn { padding: 10px 14px; border-radius: 10px; font-size: 1rem; }
+
+  /* inputs touch-friendly */
+  input, select, textarea {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  /* sticky form actions com cuidado */
+  .form-actions { position: sticky; bottom: 8px; background: transparent; padding-top: 8px; z-index: 30; }
+}
+
+/* ===== pequenas helpers que não impactam desktop ===== */
+/* esconder mobile-nav no desktop (garante compatibilidade) */
+@media (min-width: 1024px) {
+  #mobileNav { display: none !important; }
+}
+
+/* fim do arquivo seguro - não mexer em variáveis globais ou em .table/.btn fora de media queries */
