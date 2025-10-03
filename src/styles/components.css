@@ -1,0 +1,28 @@
+/* Layout responsivo básico */
+@media (max-width: 768px) {
+  .inventory-container {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .inventory-form,
+  .inventory-table,
+  .chart-container {
+    width: 100% !important;
+    margin-bottom: 1.5rem;
+  }
+
+  table {
+    font-size: 14px;
+  }
+
+  .btn-export {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+.chart-container {
+  max-width: 600px;
+  margin: 0 auto;
+}

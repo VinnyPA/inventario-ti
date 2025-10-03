@@ -4,8 +4,34 @@ import { notify } from './Notification.js';
 import { debounce } from '../../lib/debounce.js';
 import { TAGS } from '../../lib/tags.js';
 
+function exportToCSV(items) {
+  const headers = ['Produto', 'Descrição', 'Quantidade', 'Local', 'Tags'];
+  const rows = items.map(item => [
+    item.name,
+    item.description ?? '',
+    item.quantity,
+    item.location ?? '',
+    (item.tags || []).join(', ')
+  ]);
+
+  let csvContent = 'data:text/csv;charset=utf-8,';
+  csvContent += headers.join(',') + '\n';
+  rows.forEach(row => {
+    csvContent += row.map(value => `"${value}"`).join(',') + '\n';
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement('a');
+  link.setAttribute('href', encodedUri);
+  link.setAttribute('download', 'inventario.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
 export function InventoryTable() {
   const wrap = document.createElement('div');
+  let latestItems = [];
 
   // --- FILTROS ---
   const filters = document.createElement('div');
@@ -89,6 +115,14 @@ export function InventoryTable() {
 
   wrap.appendChild(filters);
 
+  // --- BOTÃO DE EXPORTAR CSV ---
+  const exportBtn = document.createElement('button');
+  exportBtn.textContent = '📥 Exportar CSV';
+  exportBtn.className = 'btn-export';
+  exportBtn.style.marginTop = '10px';
+  exportBtn.style.marginBottom = '10px';
+  wrap.appendChild(exportBtn);
+
   // --- TABELA ---
   const table = document.createElement('table');
   table.className = 'table';
@@ -98,13 +132,11 @@ export function InventoryTable() {
     </tr>
   </thead><tbody></tbody>`;
 
-  // envolve a tabela num container que terá scroll próprio
   const tableWrap = document.createElement('div');
   tableWrap.className = 'table-wrap';
   tableWrap.appendChild(table);
   wrap.appendChild(tableWrap);
 
-  // helpers TAGs
   const currentTags = () =>
     [...menu.querySelectorAll('input[type="checkbox"]:checked')].map(el =>
       (el.value || '').toString().trim().toUpperCase()
@@ -119,13 +151,12 @@ export function InventoryTable() {
   const closeMenu = () => (menu.style.display = 'none');
   const toggleMenu = () => (menu.style.display === 'none' ? openMenu() : closeMenu());
 
-  // render principal
   async function render(q = '', tagsArr = []) {
     const tbody = table.querySelector('tbody');
-    // AGORA SÃO 6 COLUNAS
     tbody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
     try {
-      const items = await listInventory({ q, tags: tagsArr }); // OR via overlaps
+      const items = await listInventory({ q, tags: tagsArr });
+      latestItems = items;
       tbody.innerHTML = '';
       if (!items.length) {
         tbody.innerHTML = '<tr><td colspan="6">Sem itens</td></tr>';
@@ -149,7 +180,6 @@ export function InventoryTable() {
             <button data-del class="danger">Excluir</button>
           </td>`;
 
-        // Editar
         tr.querySelector('[data-edit]').onclick = async () => {
           const name = prompt('Nome', it.name) ?? it.name;
           const description = prompt('Descrição', it.description ?? '') ?? it.description;
@@ -163,7 +193,6 @@ export function InventoryTable() {
           } catch (e) { notify(e.message, 'error'); }
         };
 
-        // Entrada
         tr.querySelector('[data-in]').onclick = async () => {
           const qty = parseInt(prompt('Quantidade de entrada?') || '0', 10);
           if (qty > 0 && confirm(`Confirmar entrada de ${qty} em "${primaryTag || it.name}"?`)) {
@@ -176,7 +205,6 @@ export function InventoryTable() {
           }
         };
 
-        // Saída
         tr.querySelector('[data-out]').onclick = async () => {
           const qty = parseInt(prompt('Quantidade de saída?') || '0', 10);
           if (qty > 0 && it.quantity - qty >= 0 && confirm(`Confirmar saída de ${qty} em "${primaryTag || it.name}"?`)) {
@@ -191,7 +219,6 @@ export function InventoryTable() {
           }
         };
 
-        // Excluir
         tr.querySelector('[data-del]').onclick = async () => {
           if (confirm(`Excluir "${primaryTag || it.name}"? Esta ação não pode ser desfeita.`)) {
             try {
@@ -209,7 +236,14 @@ export function InventoryTable() {
     }
   }
 
-  // eventos filtros
+  exportBtn.addEventListener('click', () => {
+    if (!latestItems.length) {
+      notify('Nada para exportar!', 'warning');
+      return;
+    }
+    exportToCSV(latestItems);
+  });
+
   const triggerRender = () => render(search.value, currentTags());
   search.addEventListener('input', triggerRender);
   tagsBtn.addEventListener('click', (e) => {
@@ -218,31 +252,26 @@ export function InventoryTable() {
   });
   list.addEventListener('change', () => {
     updateTagsBtn();
-    triggerRender(); // aplica na hora
+    triggerRender();
   });
   btnClear.addEventListener('click', () => {
     menu.querySelectorAll('input[type="checkbox"]').forEach(cb => (cb.checked = false));
     updateTagsBtn();
-    render(search.value, []); // sem filtro
+    render(search.value, []);
   });
 
-  // fechar ao clicar fora
   document.addEventListener('click', (e) => {
     if (!tagsFilter.contains(e.target)) closeMenu();
   });
 
-  // primeira carga
   updateTagsBtn();
   render('', []);
 
-  // refresh externo
   document.addEventListener('inventory:changed', () => render(search.value, currentTags()));
 
-  // ====== TEMPO REAL ======
   const realtimeRefresh = debounce(() => render(search.value, currentTags()), 200);
   document.addEventListener('inventory:realtime', realtimeRefresh);
   document.addEventListener('movements:realtime', realtimeRefresh);
-  // aqui estava "refresh" (inexistente)
   document.addEventListener('audit:realtime', realtimeRefresh);
 
   return wrap;
