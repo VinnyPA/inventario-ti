@@ -39,7 +39,6 @@ export function InventoryTable() {
   filters.style.gridTemplateColumns = '1fr';
   filters.style.gap = '10px';
 
-  // busca por texto
   const search = document.createElement('input');
   search.placeholder = 'Buscar...';
   search.className = 'search';
@@ -79,24 +78,35 @@ export function InventoryTable() {
   list.style.listStyle = 'none';
   list.style.margin = '0';
   list.style.padding = '0';
-  list.style.display = 'grid';
-  list.style.gridTemplateColumns = '1fr';
-  list.style.rowGap = '6px';
+  list.style.display = 'block';
+  list.style.width = '100%';
 
+  // ✅ CHECKBOXES ALINHADOS E RENTES AO TEXTO
+  // label envolve input + texto, com inline-flex para alinhamento e sem margens extras
   TAGS.forEach((tg) => {
     const id = `tag-${tg.replace(/\s+/g, '-').toLowerCase()}`;
+
     const li = document.createElement('li');
+    li.className = 'tag-checkbox';
+    li.style.display = 'block';
+    li.style.marginBottom = '6px';
+    li.style.width = '100%';
+
     const label = document.createElement('label');
     label.setAttribute('for', id);
-    label.style.display = 'flex';
+    label.style.display = 'inline-flex';
     label.style.alignItems = 'center';
-    label.style.gap = '8px';
+    label.style.gap = '6px';           // distância mínima entre box e texto
+    label.style.lineHeight = '1.2';    // reduz a altura pra ficar rente
     label.style.cursor = 'pointer';
 
     const cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.id = id;
     cb.value = tg;
+    cb.style.margin = '0';             // remove margens que empurram o texto
+    cb.style.padding = '0';
+    cb.style.verticalAlign = 'middle'; // reforço
 
     const span = document.createElement('span');
     span.textContent = tg;
@@ -246,14 +256,17 @@ export function InventoryTable() {
 
   const triggerRender = () => render(search.value, currentTags());
   search.addEventListener('input', triggerRender);
+
   tagsBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleMenu();
   });
+
   list.addEventListener('change', () => {
     updateTagsBtn();
     triggerRender();
   });
+
   btnClear.addEventListener('click', () => {
     menu.querySelectorAll('input[type="checkbox"]').forEach(cb => (cb.checked = false));
     updateTagsBtn();
